@@ -32,40 +32,49 @@ class Expenses: ObservableObject {
 }
 
 struct ContentView: View {
-//    Add an @StateObject property in the view to create an instance of the Expenses class
-//    Using @StateObject assks SwiftUI to watch the object for any change announcments, so any time one of the @Published properties changes the view will refresh its body.
+    //    Add an @StateObject property in the view to create an instance of the Expenses class
+    //    Using @StateObject asks SwiftUI to watch the object for any change announcments, so any time one of the @Published properties changes the view will refresh its body.
     @StateObject var expenses = Expenses()
     @State private var showingAddExpense = false
     
-
+    
     var body: some View {
         NavigationView {
             List {
-//                ForEach(expenses.items, id: \.name) { item in
-//                    Text(item.name)
-//                    This tells the ForEach to identify each expense item uniquely by its name, then prints the name out as the list row.
-//                }
-//                Now that you made a UUID, we can write the ForEach this way:
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type)
+                Section("Personal") {
+                    ForEach(expenses.items.filter { $0.type == "Personal" }) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                            }
+                            Spacer()
+                            Text(item.amountFormatted)
+                                .foregroundColor(textColor(forAmount: item.amount))
                         }
-                        Spacer()
-                        Text(item.amountFormatted)
-                            .foregroundColor(textColor(forAmount: item.amount))
                     }
+                    .onDelete(perform: removeItems)
                 }
-                .onDelete(perform: removeItems)
+                Section("Business") {
+                    ForEach(expenses.items.filter { $0.type == "Business" }) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                            }
+                            Spacer()
+                            Text(item.amountFormatted)
+                                .foregroundColor(textColor(forAmount: item.amount))
+                        }
+                    }
+                    
+                    .onDelete(perform: removeItems)
+                }
             }
             .navigationTitle("iExpense")
             .toolbar {
                 Button {
                     showingAddExpense = true
-//                    let expense = ExpenseItem(name: "Test Expense", type: "Test Type", amount: 10)
-//                    expenses.items.append(expense)
                 } label: {
                     Image(systemName: "plus.circle")
                 }
@@ -81,12 +90,12 @@ struct ContentView: View {
     
     func textColor(forAmount amount: Double) -> Color {
         if amount < 10 {
-               return Color.gray
-           } else if amount >= 10 && amount < 100 {
-               return Color.yellow
-           } else {
-               return Color.red
-           }
+            return Color.gray
+        } else if amount >= 10 && amount < 100 {
+            return Color.yellow
+        } else {
+            return Color.red
+        }
     }
 }
 

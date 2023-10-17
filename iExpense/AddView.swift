@@ -35,6 +35,7 @@ struct AddView: View {
             .toolbar {
                 Button("Save") {
                     let item = ExpenseItem(name: name, type: type, amount: amount, currencyCode: currencyCode)
+                    
                     expenses.items.append(item)
                     dismiss() 
                 }
